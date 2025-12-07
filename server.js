@@ -7,7 +7,7 @@ const uri =
   "mongodb+srv://lonelydomino:Kiwi2023@cluster0.jycrvss.mongodb.net/todoapp?retryWrites=true&w=majority&appName=Cluster0";
 const app = express();
 
-app.use(express.json());
+// CORS must be configured before other middleware
 app.use(
   cors({
     origin: [
@@ -17,9 +17,16 @@ app.use(
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   })
 );
+
+// Handle preflight requests explicitly
+app.options("*", cors());
+
+app.use(express.json());
 
 mongoose
   .connect(uri, {
